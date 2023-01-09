@@ -1,34 +1,43 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-   name: cicdproj
+  name: cicdproj
+  labels:
+    app: cicdproj
 spec:
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: cicdproj
+      
   template:
     metadata:
       labels:
         app: cicdproj
+        tier: cicdproj
     spec:
       containers:
-      - name: cicdproj
-        image: dockerimage/cicdproj
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
+        - name: cicdproj
+          image: dockerimage/cicdproj
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 5000
+            name: cicdproj
+
 
 ---
-
 apiVersion: v1
 kind: Service
-  
 metadata:
   name: cicdproj
+  labels:
+    app: cicdproj
 spec:
-  type: LoadBalancer
+  ports:
+    - port: 5000
+      targetPort: 5000
   selector:
     app: cicdproj
-  ports:
-  - port: 8081
-    targetPort: 8080
+    tier: cicdproj
+  type: LoadBalancer
